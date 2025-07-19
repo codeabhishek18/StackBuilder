@@ -58,7 +58,7 @@ export default function Home()
   };
 
   return(
-    <div>
+    <div className="lg:px-48 px-0">
       <div className="max-w-4xl mx-auto py-12">
         <div className="text-center">
           <h1 className="text-5xl font-bold bg-clip-text mb-4">
@@ -117,7 +117,6 @@ export function HabbitCard({habbit, index, setActivehabit, activeHabit, handleDr
         </div>
         <Trash size={20} className="text-blue-400 cursor-pointer" onClick={()=> removeHabbit(index)}/>
         </div>
-      {/* <p className={showDrag ? 'text-md p-2 rounded my-2' : 'opacity-0' } onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index+1); setShowDrag(false)}}>Drop here</p>   */}
     </div>
   )
 }
