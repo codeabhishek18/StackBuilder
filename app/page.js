@@ -106,12 +106,12 @@ export function HabbitCard({habbit, index, setActivehabit, activeHabit, handleDr
   const [ showDrag, setShowDrag ] = useState(false);
 
   return(
-    <div className="" key={index}>
+    <div key={index} draggable onDrag={()=> setActivehabit(index)} onDragEnd={()=> setActivehabit(null)} onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index); setShowDrag(false)}}>
       <div 
         className={`flex items-center justify-between p-6 pl-2 bg-blue-100 text-lg font-semibold
-                   border-blue-400 border-l-4 rounded-lg text-black ${activeHabit === index && 'hidden'} ${showDrag && 'bg-blue-50 text-gray-400'}`} 
+                   border-blue-400 border-l-4 rounded-lg text-black ${showDrag && 'bg-blue-50 text-gray-400'}`} 
         key={index}>
-        <div className="flex items-center gap-4" draggable onDrag={()=> setActivehabit(index)} onDragEnd={()=> setActivehabit(null)} onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index); setShowDrag(false)}}>
+        <div className="flex items-center gap-4">
           <GripVertical className="hover:cursor-grab" size={24}/>
           <p>{habbit}</p>
         </div>
