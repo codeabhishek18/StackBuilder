@@ -21,7 +21,8 @@ export default function Home()
       setNewHabit('');
       toast.success('New habit added')
     }
-    toast.warn('Please enter a habit before adding!')
+    else
+      toast.warn('Please enter a habit before adding!')
   }
 
   const handleDrop = (position) =>
