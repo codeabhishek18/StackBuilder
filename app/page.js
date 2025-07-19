@@ -1,38 +1,53 @@
 'use client'
 
+import { GripVertical, Move, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Home()
 {
-  const [ newHabbit, setNewHabbit ] = useState('');
-  const [ habbits, setHabbits ] = useState([]);
-  const [ activeHabbit, setActivehabbit ] = useState(null);
+  const [ newHabit, setNewHabit ] = useState('');
+  const [ habits, setHabits ] = useState([]);
+  const [ activeHabit, setActivehabit ] = useState(null);
   const [ showDrag, setShowDrag ] = useState(false);  
 
   const handleSubmit = (e) =>
   {
-    e.preventDefault()
-    setHabbits((prev)=> [...prev, newHabbit]);
-    setNewHabbit('');
+    e.preventDefault();
+
+    if(newHabit.trim())
+    {
+      setHabits((prev)=> [...prev, newHabit]);
+      setNewHabit('');
+      toast.success('New habit added')
+    }
+    toast.warn('Please enter a habit before adding!')
   }
 
   const handleDrop = (position) =>
   {
-    const movingHabbit = habbits[activeHabbit]
-    const updatedHabbits = habbits.filter((_, index) => index !== activeHabbit);
-    updatedHabbits.splice(position, 0, movingHabbit);
-    setHabbits(updatedHabbits)
+    const movingHabbit = habits[activeHabit]
+    const updatedHabits = habits.filter((_, index) => index !== activeHabit);
+    updatedHabits.splice(position, 0, movingHabbit);
+    setHabits(updatedHabits)
+  }
+
+  const removeHabbit = (position) =>
+  {
+    const updatedHabits = habits.filter((_, index) => index !== position);
+    setHabits(updatedHabits)
+    toast.success('Habit removed')
   }
 
   const formatChainText = () => {
-    if (habbits.length === 0) return "Start building your habit chain...";
-    if (habbits.length === 1) return `I ${habbits[0]}`;
+    if (habits.length === 0) return "Start building your habit chain...";
+    if (habits.length === 1) return `I ${habits[0]}`;
     
     let text = "";
-    habbits.forEach((habbit, index) => {
+    habits.forEach((habbit, index) => {
       if (index === 0) {
         text += `After I ${habbit}`;
-      } else if (index === habbits.length - 1 && habbits.length !== 2) {
+      } else if (index === habits.length - 1 && habits.length !== 2) {
         text += `, then I ${habbit}`;
       } else {
         text += `, I ${habbit}`;
@@ -64,19 +79,20 @@ export default function Home()
         </div>
 
         <form onSubmit={handleSubmit} className="px-8 flex gap-4">
-          <input placeholder="Enter your habit here" className="bg-blue-50 flex-1 p-4 border-l-4 text-lg border-blue-500 rounded-lg text-black" value={newHabbit} onChange={(e)=> setNewHabbit(e.target.value)}/>
-          <button type="submit" className="bg-blue-400 hover:bg-blue-600 rounded-lg p-4 text-white cursor-pointer">Add habbit</button>
+          <input placeholder="Enter your habit here" className="bg-blue-50 flex-1 p-4 border-l-4 text-lg border-blue-500 rounded-lg text-black" value={newHabit} onChange={(e)=> setNewHabit(e.target.value)}/>
+          <button type="submit" className="bg-blue-400 hover:bg-blue-500 rounded-lg p-4 text-white cursor-pointer">Add habit</button>
         </form>
       
-        {habbits.length ? <div className="px-8">
+        {habits.length ? <div className="px-8">
           <p className={showDrag ? 'text-md p-2 rounded my-2' : 'opacity-0' } onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(0); setShowDrag(false)}}>Drop here</p>
-          {habbits.map((habbit, index)=>
+          {habits.map((habbit, index)=>
           (
             <HabbitCard
             habbit={habbit}
             index={index}
-            setActivehabbit={setActivehabbit}
+            setActivehabit={setActivehabit}
             handleDrop={handleDrop}
+            removeHabbit={removeHabbit}
             key={index}/>
           ))}
           </div>: <p className="text-center text-lg font-semibold p-6">Start adding your habits</p>}
@@ -84,14 +100,24 @@ export default function Home()
     )
 } 
 
-export function HabbitCard({habbit, index, setActivehabbit, handleDrop})
+export function HabbitCard({habbit, index, setActivehabit, handleDrop, removeHabbit})
 {
   const [ showDrag, setShowDrag ] = useState(false);
 
   return(
     <div className="" key={index}>
-      <div className="p-6 bg-blue-200 text-lg font-semibold border-blue-400 border-l-4 rounded-lg hover:cursor-grab text-black" key={index} draggable onDrag={()=> setActivehabbit(index)} onDragEnd={()=> setActivehabbit(null)}>{habbit}</div>
+      <div 
+        className="flex items-center justify-between p-6 pl-2 bg-blue-100 text-lg font-semibold
+                   border-blue-400 border-l-4 rounded-lg text-black" 
+        key={index}>
+        <div className="flex items-center gap-4" draggable onDrag={()=> setActivehabit(index)} onDragEnd={()=> setActivehabit(null)}>
+          <GripVertical className="hover:cursor-grab" size={24}/>
+          <p>{habbit}</p>
+        </div>
+        <Trash size={20} className="text-blue-400 cursor-pointer" onClick={()=> removeHabbit(index)}/>
+        </div>
       <p className={showDrag ? 'text-md p-2 rounded my-2' : 'opacity-0' } onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index+1); setShowDrag(false)}}>Drop here</p>  
     </div>
   )
 }
+
