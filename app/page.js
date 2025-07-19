@@ -9,7 +9,6 @@ export default function Home()
   const [ newHabit, setNewHabit ] = useState('');
   const [ habits, setHabits ] = useState([]);
   const [ activeHabit, setActivehabit ] = useState(null);
-  const [ showDrag, setShowDrag ] = useState(false);  
 
   const handleSubmit = (e) =>
   {
@@ -31,6 +30,7 @@ export default function Home()
     const updatedHabits = habits.filter((_, index) => index !== activeHabit);
     updatedHabits.splice(position, 0, movingHabbit);
     setHabits(updatedHabits)
+    toast.success('Habit chain updated')
   }
 
   const removeHabbit = (position) =>
@@ -84,8 +84,7 @@ export default function Home()
           <button type="submit" className="bg-blue-400 hover:bg-blue-500 rounded-lg p-4 text-white cursor-pointer">Add habit</button>
         </form>
       
-        {habits.length ? <div className="px-8">
-          <p className={showDrag ? 'text-md p-2 rounded my-2' : 'opacity-0' } onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(0); setShowDrag(false)}}>Drop here</p>
+        {habits.length ? <div className="px-8 space-y-4 mt-6">
           {habits.map((habbit, index)=>
           (
             <HabbitCard
@@ -94,6 +93,7 @@ export default function Home()
             setActivehabit={setActivehabit}
             handleDrop={handleDrop}
             removeHabbit={removeHabbit}
+            activeHabit={activeHabit}
             key={index}/>
           ))}
           </div>: <p className="text-center text-lg font-semibold p-6">Start adding your habits</p>}
@@ -101,23 +101,23 @@ export default function Home()
     )
 } 
 
-export function HabbitCard({habbit, index, setActivehabit, handleDrop, removeHabbit})
+export function HabbitCard({habbit, index, setActivehabit, activeHabit, handleDrop, removeHabbit})
 {
   const [ showDrag, setShowDrag ] = useState(false);
 
   return(
     <div className="" key={index}>
       <div 
-        className="flex items-center justify-between p-6 pl-2 bg-blue-100 text-lg font-semibold
-                   border-blue-400 border-l-4 rounded-lg text-black" 
+        className={`flex items-center justify-between p-6 pl-2 bg-blue-100 text-lg font-semibold
+                   border-blue-400 border-l-4 rounded-lg text-black ${activeHabit === index && 'hidden'} ${showDrag && 'bg-blue-50 text-gray-400'}`} 
         key={index}>
-        <div className="flex items-center gap-4" draggable onDrag={()=> setActivehabit(index)} onDragEnd={()=> setActivehabit(null)}>
+        <div className="flex items-center gap-4" draggable onDrag={()=> setActivehabit(index)} onDragEnd={()=> setActivehabit(null)} onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index); setShowDrag(false)}}>
           <GripVertical className="hover:cursor-grab" size={24}/>
           <p>{habbit}</p>
         </div>
         <Trash size={20} className="text-blue-400 cursor-pointer" onClick={()=> removeHabbit(index)}/>
         </div>
-      <p className={showDrag ? 'text-md p-2 rounded my-2' : 'opacity-0' } onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index+1); setShowDrag(false)}}>Drop here</p>  
+      {/* <p className={showDrag ? 'text-md p-2 rounded my-2' : 'opacity-0' } onDragEnter={() => setShowDrag(true)} onDragLeave={()=> setShowDrag(false)} onDragOver={(e)=> e.preventDefault()} onDrop={()=> {handleDrop(index+1); setShowDrag(false)}}>Drop here</p>   */}
     </div>
   )
 }
